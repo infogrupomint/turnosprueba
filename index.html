@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reserva de Turnos - Barbería</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Reserva tu Turno en la Barbería</h1>
+        </header>
+
+        <section id="reservas">
+            <h2>Elige tu Turno</h2>
+            <div id="turnos-disponibles">
+                <!-- Los turnos se cargarán aquí con JavaScript -->
+            </div>
+        </section>
+
+        <footer>
+            <p>&copy; 2025 Barbería XYZ</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+
+        <!-- Firebase App (requerido) y Firebase Firestore -->
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
+
+<script>
+  // Configura Firebase con tus credenciales
+  const firebaseConfig = {
+    apiKey: "AIzaSyBIXuqwtBM1xu671nFwcgCBL195IqYzUKw",
+    authDomain: "barberia-8068d.firebaseapp.com",
+    databaseURL: "https://barberia-8068d-default-rtdb.firebaseio.com",
+    projectId: "barberia-8068d",
+    storageBucket: "barberia-8068d.firebasestorage.app",
+    messagingSenderId: "382004628675",
+    appId: "1:382004628675:web:c0ae07ee356c84bdcbe676"
+  };
+
+  // Inicializa Firebase
+  const app = firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore(app);
+</script>
+
+</body>
+</html>
