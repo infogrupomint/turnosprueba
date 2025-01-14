@@ -3,49 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reserva de Turnos - Barbería</title>
+    <title>Reserva de Turnos Barbería</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1>Reserva tu Turno en la Barbería</h1>
-        </header>
+        <h1>Reserva de Turnos para la Barbería</h1>
+        <h2>Selecciona tu turno</h2>
+        <div id="available-times">
+            <h3>Turnos disponibles</h3>
+            <ul id="turno-list">
+                <!-- Aquí aparecerán los turnos disponibles -->
+            </ul>
+        </div>
 
-        <section id="reservas">
-            <h2>Elige tu Turno</h2>
-            <div id="turnos-disponibles">
-                <!-- Los turnos se cargarán aquí con JavaScript -->
-            </div>
-        </section>
-
-        <footer>
-            <p>&copy; 2025 Barbería XYZ</p>
-        </footer>
+        <div id="reservation">
+            <h3>Reservar Turno</h3>
+            <label for="turno">Selecciona un turno:</label>
+            <select id="turno" required>
+                <!-- Aquí se cargarán los turnos disponibles -->
+            </select>
+            <button id="reserve-btn">Reservar</button>
+        </div>
     </div>
 
-    <script src="script.js"></script>
+    <!-- Firebase SDK (con módulos) -->
+    <script type="module">
+        // Importar Firebase
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js';
+        import { getDatabase, ref, onValue, update } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js';
 
-        <!-- Firebase App (requerido) y Firebase Firestore -->
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
-
-<script>
-  // Configura Firebase con tus credenciales
-  const firebaseConfig = {
-    apiKey: "AIzaSyBIXuqwtBM1xu671nFwcgCBL195IqYzUKw",
-    authDomain: "barberia-8068d.firebaseapp.com",
-    databaseURL: "https://barberia-8068d-default-rtdb.firebaseio.com",
-    projectId: "barberia-8068d",
-    storageBucket: "barberia-8068d.firebasestorage.app",
-    messagingSenderId: "382004628675",
-    appId: "1:382004628675:web:c0ae07ee356c84bdcbe676"
+        // Configuración de Firebase
+        const firebaseConfig = {
+    apiKey: "AIzaSyCFe03XsdN-QMrJuqVct8ufKycZL1aAmG8",
+    authDomain: "turnero-8631a.firebaseapp.com",
+    databaseURL: "https://turnero-8631a-default-rtdb.firebaseio.com",
+    projectId: "turnero-8631a",
+    storageBucket: "turnero-8631a.firebasestorage.app",
+    messagingSenderId: "4441731753",
+    appId: "1:4441731753:web:46c8e82c28f0270edcafb8"
   };
 
-  // Inicializa Firebase
-  const app = firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore(app);
-</script>
+        // Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
 
+        // Referencia al contenedor de turnos disponibles
+        const turnoList = document.getElementById('turno-list');
+        const turnoSelect = document.getElementById('turno');
+        const reserveBtn = document.getElementById('reserve-btn');
+
+        // Función para cargar los turnos disponibles
+        function loadAvailableTurns() {
+            const turnsRef = ref(database, 'turnos/');
+            
+            onValue(turnsRef, (snapshot) => {
+                const turns = snapshot.val();
+                console.log(turns); // Agregar un log para ver los datos en la consola
+
+                turnoList.innerHTML = '';
+                turnoSelect.innerHTML = '';
+                
+
+                for (const key in turns) {
+                    const turno = turns[key];
+                    if (!turno.reservado) {
+                        // Agregar el turno a la lista de turnos disponibles
+                        const listItem = document.createElement('li');
+                        listItem.textContent = turno.hora;
+                        turnoList.appendChild(listItem);
+
+                        // Agregar el turno al selector
+                        const option = document.createElement('option');
+                        option.value = key;
+                        option.textContent = turno.hora;
+                        turnoSelect.appendChild(option);
+                    }
+                }
+            });
+        }
+
+        // Función para reservar un turno
+        reserveBtn.addEventListener('click', () => {
+            const turnoId = turnoSelect.value;
+            if (turnoId) {
+                const turnoRef = ref(database, 'turnos/' + turnoId);
+                update(turnoRef, {
+                    reservado: true
+                }).then(() => {
+                    alert('¡Tu turno ha sido reservado!');
+                    loadAvailableTurns(); // Recargar los turnos disponibles
+                }).catch((error) => {
+                    console.error("Error reservando el turno: ", error);
+                });
+            }
+        });
+
+        // Cargar los turnos al cargar la página
+        window.onload = loadAvailableTurns;
+    </script>
 </body>
 </html>
