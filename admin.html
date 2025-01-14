@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administración de Turnos</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Administración de Turnos Reservados</h1>
+        <button id="back-btn">Volver a la Página Principal</button>
+        <h2>Turnos Reservados</h2>
+        <ul id="reserved-turns-list">
+            <!-- Aquí aparecerán los turnos reservados -->
+        </ul>
+    </div>
+
+    <!-- Firebase SDK (con módulos) -->
+    <script type="module">
+        // Importar Firebase
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js';
+        import { getDatabase, ref, onValue, update } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js';
+
+        // Configuración de Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyCFe03XsdN-QMrJuqVct8ufKycZL1aAmG8",
+            authDomain: "turnero-8631a.firebaseapp.com",
+            databaseURL: "https://turnero-8631a-default-rtdb.firebaseio.com",
+            projectId: "turnero-8631a",
+            storageBucket: "turnero-8631a.appspot.com",
+            messagingSenderId: "4441731753",
+            appId: "1:4441731753:web:46c8e82c28f0270edcafb8"
+        };
+
+        // Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        // Referencia al elemento de la lista de turnos reservados
+        const reservedTurnsList = document.getElementById('reserved-turns-list');
+        const backBtn = document.getElementById('back-btn');
+
+        // Función para cargar los turnos reservados
+        function loadReservedTurns() {
+            const turnsRef = ref(database, 'turnos/');
+
+            onValue(turnsRef, (snapshot) => {
+                const turns = snapshot.val();
+                reservedTurnsList.innerHTML = '';
+
+                for (const key in turns) {
+                    const turno = turns[key];
+                    if (turno.reservado) {
+                        const listItem = document.createElement('li');
+                        listItem.textContent = `${turno.hora} (Reservado)`;
+                        listItem.style.cursor = 'pointer';
+
+                        // Al hacer clic, cambiar el estado a disponible
+                        listItem.addEventListener('click', () => {
+                            const turnoRef = ref(database, 'turnos/' + key);
+                            update(turnoRef, {
+                                reservado: false
+                            }).then(() => {
+                                alert(`El turno de las ${turno.hora} ahora está disponible.`);
+                                loadReservedTurns(); // Recargar los turnos reservados
+                            }).catch((error) => {
+                                console.error("Error actualizando el turno: ", error);
+                            });
+                        });
+
+                        reservedTurnsList.appendChild(listItem);
+                    }
+                }
+            });
+        }
+
+        // Función para volver a la página principal
+        backBtn.addEventListener('click', () => {
+            window.location.href = 'index.html';
+        });
+
+        // Cargar los turnos reservados al cargar la página
+        window.onload = loadReservedTurns;
+    </script>
+</body>
+</html>

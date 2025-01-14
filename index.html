@@ -25,6 +25,12 @@
             </select>
             <button id="reserve-btn">Reservar</button>
         </div>
+
+        <!-- Botón para acceder a la página de administración -->
+        <div id="admin-access">
+            <h3>¿Eres administrador?</h3>
+            <a href="admin.html" id="admin-link">Acceder a Administración de Turnos</a>
+        </div>
     </div>
 
     <!-- Firebase SDK (con módulos) -->
@@ -35,20 +41,20 @@
 
         // Configuración de Firebase
         const firebaseConfig = {
-    apiKey: "AIzaSyCFe03XsdN-QMrJuqVct8ufKycZL1aAmG8",
-    authDomain: "turnero-8631a.firebaseapp.com",
-    databaseURL: "https://turnero-8631a-default-rtdb.firebaseio.com",
-    projectId: "turnero-8631a",
-    storageBucket: "turnero-8631a.firebasestorage.app",
-    messagingSenderId: "4441731753",
-    appId: "1:4441731753:web:46c8e82c28f0270edcafb8"
-  };
+            apiKey: "AIzaSyCFe03XsdN-QMrJuqVct8ufKycZL1aAmG8",
+            authDomain: "turnero-8631a.firebaseapp.com",
+            databaseURL: "https://turnero-8631a-default-rtdb.firebaseio.com",
+            projectId: "turnero-8631a",
+            storageBucket: "turnero-8631a.appspot.com",
+            messagingSenderId: "4441731753",
+            appId: "1:4441731753:web:46c8e82c28f0270edcafb8"
+        };
 
         // Inicializar Firebase
         const app = initializeApp(firebaseConfig);
         const database = getDatabase(app);
 
-        // Referencia al contenedor de turnos disponibles
+        // Referencias a los elementos del DOM
         const turnoList = document.getElementById('turno-list');
         const turnoSelect = document.getElementById('turno');
         const reserveBtn = document.getElementById('reserve-btn');
@@ -59,11 +65,9 @@
             
             onValue(turnsRef, (snapshot) => {
                 const turns = snapshot.val();
-                console.log(turns); // Agregar un log para ver los datos en la consola
 
                 turnoList.innerHTML = '';
                 turnoSelect.innerHTML = '';
-                
 
                 for (const key in turns) {
                     const turno = turns[key];
